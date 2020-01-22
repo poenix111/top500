@@ -25,6 +25,10 @@ class ScrapTop500:
         pages = [1, 2, 3, 4, 5]
         listaComparativas = self.getTop()
         for p in listaComparativas:
+            print (p)
+            date = p.split('/')
+            year = date[2]
+            mon = date[3]
             for num in pages:
                 urlAux = self.urlBase + p
                 params = {"page": str(num)}
@@ -32,9 +36,38 @@ class ScrapTop500:
                 response = requests.get(urlAux, params=params)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 table = soup.find('table', {'class':"table table-condensed table-striped"})
-                body = soup.find_all('tbody')
-                print(table)
-                exit()
+                body = table.find_all('tr')
+                saltar = False
+                lista500Top = []                
+               
+                for b in body:
+                    if not saltar:
+                        saltar = True
+                        continue
+                  
+                    b = b.find_all("td")
+                    
+                    site = b[1].find('a').text
+                    pais = b[1].text[len(site):]
+                    print(pais)
+                    example = {
+                    "rank": b[0].text,
+                    "site": site,
+                    "pais":pais,
+                    "system": b[2].text,
+                    "cores": b[3].text,
+                    "rmax":b[4].text,
+                    "rpeak": b[5].text,
+                    "power":b[6].text,
+                    'año' : year,
+                    'mes' : mon
+                    }
+                    lista500Top.append(example)    
+                    print(lista500Top)
+                   
+                    
+                    
+                
                 
 scrap = ScrapTop500()
 
