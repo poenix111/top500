@@ -15,7 +15,8 @@ class ScrapTop500:
         links = squares.find_all('a')
         listaComparativas = []
         for ref in links:
-            listaComparativas.append(ref['href'])
+            save = str(ref['href']).replace('lists','list')
+            listaComparativas.append(save)
 
         # print(listaComparativas)
         return listaComparativas
@@ -31,8 +32,8 @@ class ScrapTop500:
                 response = requests.get(urlAux, params=params)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 table = soup.find('table', {'class':"table table-condensed table-striped"})
-                body = table.find_all('td')
-                print(body)
+                body = soup.find_all('tbody')
+                print(table)
                 exit()
                 
 scrap = ScrapTop500()
