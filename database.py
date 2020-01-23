@@ -41,6 +41,7 @@ class DbTop500:
                 año INT, 
                 mes INT
             )''' % self.db_name)
+        cursor.close()
 
         self.disconnect()
 
@@ -49,7 +50,6 @@ class DbTop500:
             self.connect()
 
         cursor = self.db.cursor()
-        print(data.values())
         sql = "INSERT INTO registros VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = (None, ) + tuple(data.values())
         print(values)
@@ -58,7 +58,29 @@ class DbTop500:
         self.db.commit()
         cursor.close()
 
+    def query_count_paises(self, anio_igual=None, anio_mayor=None, descendente=True) -> list:
+        if(not self.conectado):
+            self.connect()
+
+        cursor = self.db.cursor()
+        query = "SELECT pais, COUNT(*) AS count FROM registros"
+
+        if(anio_igual is not None):
+            query += " WHERE año = %s" % anio_igual
+        elif(anio_mayor is not None):
+            query += " WHERE año > %s" % anio_mayor
+
+        query += " GROUP BY pais ORDER BY `count`"
+        query += " DESC" if(descendente) else " ASC"
+
+        cursor.execute(query)
+        result = cursor.fetchall()
+        cursor.close()
+
+        return result
+
+
 
 if __name__ == '__main__':
     db = DbTop500()
-    db.create_database()
+    print(db.query_count_paises(anio_mayor=2008))
