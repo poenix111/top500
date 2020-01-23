@@ -58,7 +58,7 @@ class DbTop500:
         self.db.commit()
         cursor.close()
 
-    def query_count_paises(self, anio_igual=None, anio_mayor=None, descendente=True) -> list:
+    def query_count_paises(self, anio_igual=None, anio_mayor=None, descendente=True, limite=None) -> list:
         if(not self.conectado):
             self.connect()
 
@@ -73,6 +73,9 @@ class DbTop500:
         query += " GROUP BY pais ORDER BY `count`"
         query += " DESC" if(descendente) else " ASC"
 
+        if(limite is not None):
+            query += " LIMIT %s" % limite
+
         cursor.execute(query)
         result = cursor.fetchall()
         cursor.close()
@@ -83,4 +86,4 @@ class DbTop500:
 
 if __name__ == '__main__':
     db = DbTop500()
-    print(db.query_count_paises(anio_mayor=2008))
+    db.create_database()
